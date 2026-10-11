@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="./styles_menu.css" rel="stylesheet">
     <link href="./styles_game.css" rel="stylesheet">
+    <link href="./styles_customnight.css" rel="stylesheet">
     <link rel="icon" href="images/favicon.jpg">
     <title>FNAF 4 Web</title>
 </head>
@@ -37,7 +38,8 @@
     </div>
     <div id="menu-div">
         <img src="/fnafweb/images/misc/logo1.png" id="logo">
-        <button id="play-button" onclick="startGame()" class="text-red">PLAY</button>
+        <button id="play-button" onclick="startNormalNight()" class="text-red">PLAY</button>
+        <button id="custom-night-button" onclick="openCustomNight()" class="text-red">CUSTOM NIGHT</button>
         <div id="edu-purposes">
             <p class="text-red">Made by Fyrekitten and PeeOnYou!. All right go to their respected owners</p>
             <p class="text-red">Only one night available with no Fredbear/Nightmare. Five Nights at Freddy's made by Scott Cawthon</p>
@@ -49,6 +51,16 @@
                 <p class="text-red">THIS GAME CONTAINS FLASHING LIGHTS, LOUD NOISES, AND JUST</p>
                 <p class="text-red">A "little" BIT OF JUMPSCARES</p>
             </div>
+        </div>
+    </div>
+    <div id="custom-night-panel">
+        <h1 class="text-red">CUSTOM NIGHT</h1>
+        <div id="cn-characters"></div>
+        <div id="cn-presets"></div>
+        <p id="cn-warning" class="text-red">No animatronics are active. It's going to be a quiet night...</p>
+        <div id="cn-actions">
+            <button class="text-red" onclick="closeCustomNight()">BACK</button>
+            <button class="text-red" onclick="startCustomNight()">READY</button>
         </div>
     </div>
     <div id="night-finished">
@@ -69,6 +81,7 @@
         </div>
     </div>
     <img src="images/misc/dead.png" id="dead-screen">
+    <script type="text/javascript" src="script/customnight.js"></script>
     <script type="text/javascript" src="script/controls.js"></script>
     <script type="text/javascript" src="script/menu.js"></script>
     <script type="text/javascript" src="script/visuals.js"></script>

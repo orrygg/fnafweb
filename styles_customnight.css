@@ -1,0 +1,109 @@
+/* Same look as #play-button in styles_menu.css, just below it */
+#custom-night-button {
+    font-family: 'Times New Roman', Times, serif;
+    position: absolute;
+    background: none;
+    border: none;
+    font-size: 25px;
+    cursor: pointer;
+    transform: translateX(-50%) translateY(-50%);
+    top: 58%;
+    left: 50%;
+    animation: glow infinite 2s ease-in-out;
+}
+
+#custom-night-panel {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: rgba(0, 0, 0, 0.92);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+#custom-night-panel h1 {
+    margin: 0;
+    font-size: 48px;
+    letter-spacing: 4px;
+}
+
+#cn-characters {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.cn-card {
+    width: 190px;
+    padding: 16px;
+    border: 3px solid #7a0000;
+    background: #0d0000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    transition: opacity 0.2s, filter 0.2s;
+}
+
+.cn-card.cn-disabled {
+    opacity: 0.35;
+    filter: grayscale(1);
+}
+
+.cn-name {
+    margin: 0;
+    font-size: 20px;
+    text-align: center;
+}
+
+.cn-level-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.cn-level {
+    font-size: 44px;
+    min-width: 60px;
+    text-align: center;
+}
+
+#custom-night-panel button {
+    background: transparent;
+    border: 2px solid #7a0000;
+    font-family: inherit;
+    font-size: 22px;
+    cursor: pointer;
+    padding: 4px 12px;
+}
+
+#custom-night-panel button:hover {
+    background: #3a0000;
+}
+
+.cn-toggle {
+    width: 80px;
+}
+
+.cn-slider {
+    width: 100%;
+    accent-color: #b00000;
+}
+
+#cn-presets,
+#cn-actions {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+#cn-warning {
+    margin: 0;
+    visibility: hidden;
+}

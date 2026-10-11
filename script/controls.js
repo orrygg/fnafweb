@@ -7,6 +7,9 @@ function removeEventListeners () {
     leftButton.replaceWith(leftButton.cloneNode(true));
     rightButton.replaceWith(rightButton.cloneNode(true));
     middleButton.replaceWith(middleButton.cloneNode(true));
+    document.removeEventListener("mouseup", openLeftDoor)
+    document.removeEventListener("mouseup", openRightDoor)
+    document.removeEventListener("mouseup", openCloset)
     console.log(middleButton)
     leftButton = document.getElementById("turn-left")
     rightButton = document.getElementById("turn-right")
@@ -72,6 +75,14 @@ function lookBack () {
     }
 }
 
+// "Turn back" only fires on mouseover, so if the mouse was already resting on the strip
+// when an animation finished, nothing would happen until you moved out and back in.
+function checkBackHover() {
+    if (document.getElementById("turn-back").matches(":hover")) {
+        lookBack()
+    }
+}
+
 // CLICK HANDLERS
 
 function middleClickHandler() {
@@ -92,17 +103,19 @@ function leftClickHandler () {
         } else if (lookingStatus == lookingLeftDoor) {
             doorCloseBase("images/left-door/door-left-close-", 10, false, imageDoorLeft, leftButton, openLeftDoor)
         } else if (lookingStatus == lookingClosetClose) {
-            setInterval(decreaseClosetFoxy, 1000)
             doorCloseBase("images/closet/closet-close-", 5, false, imageCloset, leftButton, openCloset, lookingClosetClose)
         }
     }
 }
 
+// Holding the closet shut pushes Foxy back. One timer for the whole game
+// (it used to start a new one on every click, stacking up and making Foxy weaker over time).
 function decreaseClosetFoxy() {
-    if (leftButton.matches(":active") && foxyCloset.currpos > 6) {
+    if (lookingStatus == lookingClosetClose && doorClosed && foxyCloset.currpos > 6) {
         foxyCloset.currpos = foxyCloset.currpos - 6
     }
 }
+setInterval(decreaseClosetFoxy, 1000)
 
 function rightClickHandler () {
     if (!animationPlaying) {

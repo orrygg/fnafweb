@@ -58,10 +58,6 @@ let imageDoorRight = "images/tutorials/tutorial-right-door.png"
 let imageCloset = "images/tutorials/tutorial-closet.png"
 
 function hideTips() {
-    if (hourCount == 0) {
-        addHour()
-        console.log("Shit just got real!")
-    }
     document.getElementById("hide-button").style.display = "none"
     imageBedroomLeft = "images/bedroom/bedroom-front-left-4.png"
     imageBedroomFront = "images/bedroom/bedroom-front.png"
@@ -70,6 +66,20 @@ function hideTips() {
     imageDoorLeft = "images/left-door/door-left-enter-18.png"
     imageDoorRight = "images/right-door/right-door-go-15.png"
     imageCloset = "images/closet/closet-go-13.png"
+    // Swap out the tip picture that's on screen right now, not just the ones used next time
+    let tipReplacements = {
+        "tutorial-front.png": imageBedroomFront,
+        "tutorial-left.png": imageBedroomLeft,
+        "tutorial-right.png": imageBedroomRight,
+        "tutorial-bed.png": imageBedroomBed,
+        "tutorial-left-door.png": imageDoorLeft,
+        "tutorial-right-door.png": imageDoorRight,
+        "tutorial-closet.png": imageCloset,
+    }
+    let currentImage = gameVisuals.src.split("/").pop()
+    if (tipReplacements[currentImage]) {
+        gameVisuals.src = tipReplacements[currentImage]
+    }
 }
 // ANIMATIONS - JUMPSCARES
 
@@ -283,6 +293,7 @@ function animationDoorGetCloser (reverse, frameName, frameCount, lookingSet, lig
                 gameVisuals.src = frameEndStandard
                 middleButton.addEventListener("mousedown", lightFunc)
                 middleButton.addEventListener("mouseup", darkFunc)
+                checkBackHover()
             }
         }
     } 
@@ -360,6 +371,7 @@ function animationClosetApproach (reverse = false) {
                 lookingStatus = lookingClosetClose
                 animationPlaying = false
                 gameVisuals.src=imageCloset
+                checkBackHover()
             } else {
             gameVisuals.src = "./images/closet/closet-go-" + l + ".png" 
             l++;
@@ -462,7 +474,9 @@ function doorCloseBase (frameName, frameCount, reverse, frameAfterReverse, butto
     function animate() { 
         if (l==frameCount+1) {
             l = frameCount
-            button.addEventListener("mouseup", funcOpen)
+            // Listen on the whole page: if the mouse is released anywhere else (e.g. over the
+            // "turn back" strip) the door would otherwise stay shut and lock the player in place
+            document.addEventListener("mouseup", funcOpen)
             clearInterval(animationInterval)
         } else if (button.matches(":active")) {
             gameVisuals.src = frameName + l + ".png" 
@@ -472,13 +486,14 @@ function doorCloseBase (frameName, frameCount, reverse, frameAfterReverse, butto
             doorCloseBase(frameName, frameCount, true, frameAfterReverse, button, funcOpen)
         }
     } function animateReverse() {
-        button.removeEventListener("mouseup", funcOpen)
+        document.removeEventListener("mouseup", funcOpen)
         if (l==0) {
             l=1
             clearInterval(animationInterval)
             doorClosed = false
             animationPlaying = false
             gameVisuals.src = frameAfterReverse
+            checkBackHover()
         } else if (!button.matches(":active")) {
             gameVisuals.src = frameName + l + ".png" 
             l--;

@@ -157,7 +157,12 @@ function animate() {
     x++; 
 } 
 
+let gameStarting = false
+
 function startGame() {
+    // Ignore extra clicks/key presses while the night is already starting
+    if (gameStarting) return
+    gameStarting = true
     blackScreenDiv.style.display = "block"
     const blackScreenFadeIn = blackScreenDiv.animate(
         fadeIn, fadeTiming
@@ -172,6 +177,7 @@ function startGame() {
         )
         blackScreenGameAnim.onfinish = () => {
             blackScreenGameDiv.style.display = "none"
+            gameStarting = false
             startAllAI()
         }
     }

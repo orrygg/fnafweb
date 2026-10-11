@@ -39,6 +39,7 @@ class DoorAnimatronic {
         }
     }
     startAI(){
+        clearInterval(this.aiInterval) // never run two timers for the same animatronic
         this.aiInterval = setInterval(this.addChance.bind(this), 6000)
     }
     stopAI(){
@@ -68,6 +69,7 @@ class PassiveAnimatronic {
         }
     }
     startAI(){
+        clearInterval(this.aiInterval)
         this.aiInterval = setInterval(this.addChance.bind(this), 5000)
     }
     stopAI(){
@@ -122,6 +124,7 @@ let foxyDoor = {
         this.currpos = -1
     },
     startAI: function() {
+        clearInterval(this.aiInterval)
         this.aiInterval = setInterval(this.addChance.bind(this), 5751)
     },
     stopAI: function() {
@@ -136,11 +139,39 @@ var hourInterval
 
 function startAllAI() {
     console.log("void_sex")
-    freddy.startAI()
-    bonnie.startAI()
-    chica.startAI()
-    foxyDoor.startAI()
-    foxyCloset.startAI()
+    // Reset everything so a new night (or a retry after dying) starts fresh
+    hourCount = 0
+    document.getElementById("clock").innerText = "12 AM"
+    flashlightWorking = false
+    doorClosed = false
+    freddy.currpos = 0
+    bonnie.currpos = 0
+    chica.currpos = 0
+    foxyDoor.currpos = 0
+    foxyCloset.currpos = -1000
+    freddy.ailevel = 0
+    bonnie.ailevel = 0
+    chica.ailevel = 0
+    foxyDoor.ailevel = 0
+    foxyCloset.ailevel = 0
+    if (customNightMode) {
+        applyCustomNightLevels()
+    } else {
+        // Normal night: active from 12 AM (starts where 1 AM used to be)
+        freddy.ailevel = 2
+        bonnie.ailevel = 3
+        chica.ailevel = 3
+        foxyDoor.ailevel = 4
+        foxyCloset.ailevel = 3
+    }
+    if (isCharacterActive("freddy")) freddy.startAI()
+    if (isCharacterActive("bonnie")) bonnie.startAI()
+    if (isCharacterActive("chica")) chica.startAI()
+    if (isCharacterActive("foxy")) {
+        foxyDoor.startAI()
+        foxyCloset.startAI()
+    }
+    clearInterval(hourInterval)
     hourInterval = setInterval(addHour, 70000)
 }
 
@@ -148,11 +179,16 @@ function addHour() {
     hourCount = hourCount + 1
     if (hourCount != 6) {
         document.getElementById("clock").innerText = hourCount + " AM"
-        freddy.ailevel = freddy.ailevel + 2
-        bonnie.ailevel = bonnie.ailevel + 3
-        chica.ailevel = chica.ailevel + 3
-        foxyDoor.ailevel = foxyDoor.ailevel + 4
-        foxyCloset.ailevel = foxyCloset.ailevel + 3
+        // Custom night keeps the levels picked in the menu for the whole night.
+        // The normal night already starts at the 1 AM levels, so it only ramps up from 2 AM
+        // (5 AM ends up exactly as hard as before).
+        if (!customNightMode && hourCount >= 2) {
+            freddy.ailevel = freddy.ailevel + 2
+            bonnie.ailevel = bonnie.ailevel + 3
+            chica.ailevel = chica.ailevel + 3
+            foxyDoor.ailevel = foxyDoor.ailevel + 4
+            foxyCloset.ailevel = foxyCloset.ailevel + 3
+        }
         if (hourCount == 1) {
             hideTips()
         }
@@ -176,6 +212,8 @@ function addHour() {
                 clearInterval(changeTimeInterval)
                 setTimeout( () => {
                     document.getElementById("hours-minutes").animate(fadeOut, fadeTiming)
+                    // Leave the "YOU'RE AMAZING" screen up for a bit, then go back to the menu
+                    setTimeout(returnToMenuAfterWin, 9000)
                 }, 750)
             }
         }
@@ -187,6 +225,38 @@ function addHour() {
             changeTimeInterval = setInterval(changeTime, 500)
         }
     }
+}
+
+function returnToMenuAfterWin() {
+    resetPlayer()
+    gameVisuals.src = imageBedroomFront
+    menuDiv.style.display = "block"
+    PlaySound(menuMus)
+    // The black screen from startGame() is still covering the menu, fade it away like after a death
+    let blackScreenAnimAfterWin = blackScreenDiv.animate(fadeOut, fadeTiming)
+    blackScreenAnimAfterWin.onfinish = () => {
+        blackScreenDiv.style.display = "none"
+    }
+    finishScreen.style.display = "none"
+    let hoursMinutes = document.getElementById("hours-minutes")
+    hoursMinutes.style.display = "none"
+    // Clear the finished fade animations so the 6 AM screen shows properly next time
+    hoursMinutes.getAnimations().forEach(a => a.cancel())
+    finishScreen.getAnimations().forEach(a => a.cancel())
+    document.getElementById("some-time").style.display = "none"
+}
+
+// Puts the player back in the bedroom with nothing held down, so no
+// flashlight/door state leaks from one night into the next
+function resetPlayer() {
+    removeEventListeners()
+    clearInterval(animationInterval)
+    lookingStatus = lookingCenter
+    animationPlaying = false
+    flashlightWorking = false
+    doorClosed = false
+    breathingSound.pause()
+    freddleSound.pause()
 }
 
 function stopAllAI() {
