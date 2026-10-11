@@ -25,9 +25,19 @@
     <audio id="foxy-right" autoloop src="audio/steps_foxy_right.ogg"></audio> 
     <audio id="foxy-left" autoloop src="audio/steps_foxy_left.ogg"></audio> 
     <audio id="foxy-back" autoloop src="audio/steps_foxy_middle.ogg"></audio> 
-    <audio id="clock-alarm" autoloop src="audio/clock-alarm.ogg"></audio> 
+    <audio id="clock-alarm" autoloop src="audio/clock-alarm.ogg"></audio>
+    <audio id="stalker-laugh" src="audio/freddles.ogg"></audio>
     <div id="game">
         <img src="./images/tutorials/tutorial-front.png" oncontextmenu="return false" id="game-render">
+        <div id="stalker-layer">
+            <img id="stalker-mouth" alt="">
+            <img id="stalker-overlay" alt="">
+            <img id="stalker-head" alt="">
+        </div>
+        <svg width="0" height="0" style="position: absolute">
+            <!-- Boosts the alpha so Nightmare's see-through picture looks solid -->
+            <filter id="stalker-solid"><feComponentTransfer><feFuncA type="linear" slope="3" intercept="-0.15"/></feComponentTransfer></filter>
+        </svg>
         <p id="clock">12 AM</p>
         <div id="black-screen-game"></div>
         <div id="turn-left" onmousedown="leftClickHandler()" onmouseover="leftLook()" ></div>
@@ -42,7 +52,7 @@
         <button id="custom-night-button" onclick="openCustomNight()" class="text-red">CUSTOM NIGHT</button>
         <div id="edu-purposes">
             <p class="text-red">Made by Fyrekitten and PeeOnYou!. All right go to their respected owners</p>
-            <p class="text-red">Only one night available with no Fredbear/Nightmare. Five Nights at Freddy's made by Scott Cawthon</p>
+            <p class="text-red">Only one night available. Fredbear and Nightmare can be found in Custom Night. Five Nights at Freddy's made by Scott Cawthon</p>
         </div>
         <div id="black-screen"></div>
         <div id="disclaimer">
@@ -61,6 +71,27 @@
         <div id="cn-actions">
             <button class="text-red" onclick="closeCustomNight()">BACK</button>
             <button class="text-red" onclick="startCustomNight()">READY</button>
+        </div>
+    </div>
+    <div id="cn-briefing">
+        <div id="cn-briefing-portraits">
+            <img id="cn-briefing-fredbear" src="images/extras/fat-extra.png" alt="Nightmare Fredbear">
+            <img id="cn-briefing-nightmare" src="images/extras/fat-black-extra.png" alt="Nightmare">
+        </div>
+        <div id="cn-briefing-text">
+            <h1 class="text-red">BEWARE</h1>
+            <p class="text-red">Listen for a deep giggle: he has moved to a door, the closet or your bed.</p>
+            <ul>
+                <li class="text-red"><b>DOORS</b> - If you hear breathing, DON'T use the light. Hold the door shut until he leaves.</li>
+                <li class="text-red"><b>CLOSET</b> - Hold the closet doors shut until he leaves.</li>
+                <li class="text-red"><b>BED</b> - Keep the light on his head until he leaves.</li>
+            </ul>
+            <p class="text-red">Footsteps mean he's gone. Leave him alone for too long and he WILL find you.</p>
+            <p class="text-red" id="cn-nightmare-note">Nightmare moves more often, hides in the dark and takes longer to scare off.</p>
+            <div id="cn-briefing-actions">
+                <button class="text-red" onclick="cnBriefingBack()">BACK</button>
+                <button class="text-red" onclick="cnBriefingStart()">START</button>
+            </div>
         </div>
     </div>
     <div id="night-finished">
@@ -86,5 +117,6 @@
     <script type="text/javascript" src="script/menu.js"></script>
     <script type="text/javascript" src="script/visuals.js"></script>
     <script type="text/javascript" src="script/ai.js"></script>
+    <script type="text/javascript" src="script/stalkers.js"></script>
 </body>
 </html>

@@ -153,6 +153,10 @@ function lightLeft(event) {
     if (!animationPlaying) {
         flashlightWorking = true
         PlaySound(lightSound)
+        if (stalkerAt(lookingLeftDoor)) {
+            stalkerAt(lookingLeftDoor).spotted()
+            return
+        }
         if (bonnie.currpos >= bonnie.maxpos) {
             animationJumpscareBase(18, "images/jumpscares/bonnie-door/bonnie-door-", () => { 
                 middleButton.removeEventListener("mousedown", lightLeft);
@@ -183,6 +187,10 @@ function lightRight(event) {
     if (!animationPlaying) {
         flashlightWorking = true
         PlaySound(lightSound)
+        if (stalkerAt(lookingRightDoor)) {
+            stalkerAt(lookingRightDoor).spotted()
+            return
+        }
         if (chica.currpos >= chica.maxpos) {
             animationJumpscareBase(16, "images/jumpscares/chica-door/chica-door-", () => { 
                 middleButton.removeEventListener("mousedown", lightRight);

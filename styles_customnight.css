@@ -20,8 +20,10 @@
     background: rgba(0, 0, 0, 0.92);
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: safe center;
     gap: 24px;
+    padding: 20px 0;
+    overflow-y: auto;
     font-family: 'Times New Roman', Times, serif;
 }
 
@@ -39,7 +41,7 @@
 }
 
 .cn-card {
-    width: 190px;
+    width: 175px;
     padding: 16px;
     border: 3px solid #7a0000;
     background: #0d0000;
@@ -106,4 +108,210 @@
 #cn-warning {
     margin: 0;
     visibility: hidden;
+}
+
+.cn-portrait {
+    height: 110px;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+/* Fredbear / Nightmare drawn over the game view (see script/stalkers.js) */
+#stalker-layer {
+    display: none;
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+#stalker-overlay {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    transform-origin: 50% 100%;
+    filter: brightness(0.75);
+}
+
+/* His picture is partly see-through; #stalker-solid (index.html) makes it opaque */
+#stalker-overlay.nightmare {
+    filter: url(#stalker-solid) brightness(0.55);
+}
+
+/* Only visible through the gap between the closet doors */
+#stalker-layer.spot-closet {
+    left: 57%;
+    right: 19.5%;
+}
+
+#stalker-layer.spot-closet #stalker-overlay {
+    bottom: -10%;
+    height: 85%;
+}
+
+/* On the bed and peeking round a door only his head shows.
+   The mask is an ellipse around the head in each picture (head bounds measured from the PNGs). */
+#stalker-layer:is(.spot-bed, .peek-left, .peek-right) #stalker-overlay.fredbear {
+    transform-origin: 52% 17%;
+    -webkit-mask-image: radial-gradient(ellipse 34% 19% at 52% 17%, #000 75%, transparent 100%);
+    mask-image: radial-gradient(ellipse 34% 19% at 52% 17%, #000 75%, transparent 100%);
+}
+
+#stalker-layer:is(.spot-bed, .peek-left, .peek-right) #stalker-overlay.nightmare {
+    transform-origin: 52% 18%;
+    filter: url(#stalker-solid) brightness(0.8);
+    -webkit-mask-image: radial-gradient(ellipse 22% 18% at 52% 18%, #000 75%, transparent 100%);
+    mask-image: radial-gradient(ellipse 22% 18% at 52% 18%, #000 75%, transparent 100%);
+}
+
+/* Bed: resting on the pillow where the plush is */
+#stalker-layer.spot-bed #stalker-overlay.fredbear {
+    top: 10%;
+    left: 52%;
+    height: 125%;
+}
+
+#stalker-layer.spot-bed #stalker-overlay.nightmare {
+    top: 13%;
+    left: 52%;
+    height: 120%;
+    transform: translateX(-52%); /* his head is a bit right of the middle of the picture */
+}
+
+/* Doors: peeking round the door frame. The layer ends at the frame so the rest of him is hidden */
+#stalker-layer.peek-left {
+    right: 17%;
+}
+
+#stalker-layer.peek-right {
+    left: 7%; /* this door frame slants; 7% is where it is at head height */
+}
+
+#stalker-layer:is(.peek-left, .peek-right) #stalker-overlay {
+    top: 26%;
+    height: 140%;
+}
+
+#stalker-layer.peek-left #stalker-overlay {
+    left: 90%;
+    transform: translateX(-50%) rotate(-18deg);
+}
+
+#stalker-layer.peek-right #stalker-overlay {
+    left: 12%;
+    transform: translateX(-50%) scaleX(-1) rotate(-18deg);
+}
+
+#stalker-layer.stalker-jumpscare #stalker-overlay {
+    bottom: -25%;
+    height: 100%;
+    transform-origin: 50% 20%; /* zoom in on the face */
+    filter: none;
+}
+
+#stalker-layer.stalker-jumpscare #stalker-overlay.nightmare {
+    filter: url(#stalker-solid);
+}
+
+/* Fredbear/Nightmare instructions shown after READY (see cnShowBriefing) */
+#cn-briefing {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: rgba(0, 0, 0, 0.95);
+    align-items: center;
+    justify-content: safe center;
+    gap: 40px;
+    padding: 20px;
+    overflow-y: auto;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+#cn-briefing-portraits {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+#cn-briefing-portraits img {
+    height: 300px;
+    max-height: 60vh;
+}
+
+#cn-briefing-text {
+    max-width: 520px;
+    font-size: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+#cn-briefing-text h1 {
+    font-size: 48px;
+    letter-spacing: 4px;
+}
+
+#cn-briefing-text ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-left: 12px;
+    border-left: 3px solid #7a0000;
+}
+
+#cn-briefing-actions {
+    display: flex;
+    gap: 14px;
+    margin-top: 10px;
+}
+
+#cn-briefing button {
+    background: transparent;
+    border: 2px solid #7a0000;
+    font-family: inherit;
+    font-size: 22px;
+    cursor: pointer;
+    padding: 4px 12px;
+}
+
+#cn-briefing button:hover {
+    background: #3a0000;
+}
+
+@media (max-width: 800px) {
+    #cn-briefing {
+        flex-direction: column;
+        gap: 20px;
+    }
+}
+
+/* Biting jumpscare (Fredbear and Nightmare): head (top of the jaw) and a darkened mouth behind it,
+   placed exactly over #stalker-overlay (see drawChompJumpscare) */
+#stalker-mouth,
+#stalker-head {
+    display: none;
+    position: absolute;
+    left: 50%;
+    bottom: -25%;
+    height: 100%;
+    transform-origin: 50% 20%;
+}
+
+#stalker-layer.chomp #stalker-mouth,
+#stalker-layer.chomp #stalker-head {
+    display: block;
+}
+
+#stalker-mouth {
+    filter: brightness(0.06) blur(3px);
+}
+
+#stalker-head.nightmare {
+    filter: url(#stalker-solid);
+}
+
+#stalker-mouth.nightmare {
+    filter: url(#stalker-solid) brightness(0.06) blur(3px);
 }

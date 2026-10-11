@@ -83,7 +83,8 @@ function hideTips() {
 }
 // ANIMATIONS - JUMPSCARES
 
-function killAnywhere (frameCount, frameName, pointerDisabler) {
+// drawFrame (optional): draws frame N itself instead of showing frameName + N + ".png"
+function killAnywhere (frameCount, frameName, pointerDisabler, drawFrame) {
     // pointerDisabler()
     removeEventListeners()
     stopAllAI()
@@ -96,11 +97,11 @@ function killAnywhere (frameCount, frameName, pointerDisabler) {
     )
     jumpscareBlackout.onfinish = () => { 
         blackScreenGameDiv.style.display = "none";
-        animationJumpscareBase(frameCount, frameName, () => {});
+        animationJumpscareBase(frameCount, frameName, () => {}, drawFrame);
     }
 }
 
-function animationJumpscareBase (frameCount, frameName, pointerDisabler) {
+function animationJumpscareBase (frameCount, frameName, pointerDisabler, drawFrame) {
     clearInterval(animationInterval)
     removeEventListeners()
     clearInterval(hourInterval)
@@ -115,8 +116,12 @@ function animationJumpscareBase (frameCount, frameName, pointerDisabler) {
     ambienceMus.pause()
     animationInterval = setInterval(animate, 40);
     animationPlaying = true
-    function animate() { 
-        gameVisuals.src = frameName + l + ".png" 
+    function animate() {
+        if (drawFrame) {
+            drawFrame(l, frameCount)
+        } else {
+            gameVisuals.src = frameName + l + ".png"
+        }
         l++;
         if (l==frameCount+1) {
             l=1
@@ -286,7 +291,7 @@ function animationDoorGetCloser (reverse, frameName, frameCount, lookingSet, lig
             if (l==frameCount + 1) {
                 l=1
                 clearInterval(animationInterval)
-                if (posVal >= maxVal) {
+                if (posVal >= maxVal || stalkerAt(lookingSet)) {
                     PlaySound(breathingSound)
                 }
                 animationPlaying = false
@@ -454,11 +459,11 @@ function doorCloseBase (frameName, frameCount, reverse, frameAfterReverse, butto
     if (reverse) {
         PlaySound(doorOpenSound)
         if (direction == lookingLeftDoor) {
-            if (bonnie.currpos >= bonnie.maxpos) {
+            if (bonnie.currpos >= bonnie.maxpos || stalkerAt(lookingLeftDoor)) {
                 PlaySound(breathingSound)
             }
         } else if (direction == lookingRightDoor) {
-            if (chica.currpos >= chica.maxpos) {
+            if (chica.currpos >= chica.maxpos || stalkerAt(lookingRightDoor)) {
                 PlaySound(breathingSound)
             }
         } 

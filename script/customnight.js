@@ -3,11 +3,14 @@
 
 var CN_MAX_LEVEL = 20;
 
+// customOnly: never shows up in the normal night. Starts switched off the first time.
 var CN_CHARACTERS = [
-    { id: "freddy", name: "Nightmare Freddy", defaultLevel: 5 },
-    { id: "bonnie", name: "Nightmare Bonnie", defaultLevel: 5 },
-    { id: "chica",  name: "Nightmare Chica",  defaultLevel: 5 },
-    { id: "foxy",   name: "Nightmare Foxy",   defaultLevel: 5 }
+    { id: "freddy",    name: "Nightmare Freddy",   defaultLevel: 5, portrait: "images/extras/freddy-extra.png" },
+    { id: "bonnie",    name: "Nightmare Bonnie",   defaultLevel: 5, portrait: "images/extras/bonnie-extra.png" },
+    { id: "chica",     name: "Nightmare Chica",    defaultLevel: 5, portrait: "images/extras/chica-extra.png" },
+    { id: "foxy",      name: "Nightmare Foxy",     defaultLevel: 5, portrait: "images/extras/foxy-extra.png" },
+    { id: "fredbear",  name: "Nightmare Fredbear", defaultLevel: 5, portrait: "images/extras/fat-extra.png", customOnly: true },
+    { id: "nightmare", name: "Nightmare",          defaultLevel: 5, portrait: "images/extras/fat-black-extra.png", customOnly: true }
 ];
 
 var CN_PRESETS = {
@@ -25,7 +28,7 @@ function cnLoad() {
     CN_CHARACTERS.forEach(function (c) {
         var s = saved && saved[c.id];
         customNight[c.id] = {
-            enabled: s ? !!s.enabled : true,
+            enabled: s ? !!s.enabled : !c.customOnly,
             level: s ? cnClamp(s.level) : c.defaultLevel
         };
     });
@@ -49,7 +52,9 @@ var customNightMode = false;
 
 // True if this animatronic should appear at all tonight.
 function isCharacterActive(id) {
-    if (!customNightMode) return true;
+    if (!customNightMode) {
+        return !CN_CHARACTERS.some(function (c) { return c.id == id && c.customOnly; });
+    }
     var c = customNight[id];
     return !!c && c.enabled && c.level > 0;
 }
@@ -69,6 +74,9 @@ function applyCustomNightLevels() {
     chica.ailevel = getAILevel("chica")
     foxyDoor.ailevel = getAILevel("foxy")
     foxyCloset.ailevel = getAILevel("foxy") * 0.8
+    // Fredbear/Nightmare roll against 0-20 too (see stalkers.js)
+    fredbear.ailevel = getAILevel("fredbear")
+    nightmare.ailevel = getAILevel("nightmare")
 }
 
 // ---- Menu UI ----
@@ -82,6 +90,7 @@ function cnBuildMenu() {
         card.id = "cn-card-" + c.id;
         card.innerHTML =
             '<button class="cn-toggle text-red" onclick="cnToggle(\'' + c.id + '\')"></button>' +
+            '<img class="cn-portrait" src="' + c.portrait + '" alt="">' +
             '<p class="cn-name text-red">' + c.name + '</p>' +
             '<div class="cn-level-row">' +
                 '<button class="cn-arrow text-red" onclick="cnChange(\'' + c.id + '\', -1)">&lt;</button>' +
@@ -139,8 +148,9 @@ function cnSet(id, value) {
 }
 
 function cnApplyPreset(level) {
+    // Presets switch on the main four; Fredbear/Nightmare keep their ON/OFF and just get the level
     CN_CHARACTERS.forEach(function (c) {
-        customNight[c.id].enabled = true;
+        if (!c.customOnly) customNight[c.id].enabled = true;
         customNight[c.id].level = level;
     });
     cnRefresh();
@@ -158,7 +168,31 @@ function startCustomNight() {
     if (gameStarting) return;
     customNightMode = true;
     closeCustomNight();
+    // Fredbear/Nightmare play differently from the others, so explain them first
+    if (isCharacterActive("fredbear") || isCharacterActive("nightmare")) {
+        cnShowBriefing();
+    } else {
+        startGame();
+    }
+}
+
+function cnShowBriefing() {
+    ["fredbear", "nightmare"].forEach(function (id) {
+        document.getElementById("cn-briefing-" + id).style.display = isCharacterActive(id) ? "block" : "none";
+    });
+    document.getElementById("cn-nightmare-note").style.display = isCharacterActive("nightmare") ? "block" : "none";
+    document.getElementById("cn-briefing").style.display = "flex";
+}
+
+function cnBriefingStart() {
+    if (gameStarting) return;
+    document.getElementById("cn-briefing").style.display = "none";
     startGame();
+}
+
+function cnBriefingBack() {
+    document.getElementById("cn-briefing").style.display = "none";
+    openCustomNight();
 }
 
 function startNormalNight() {

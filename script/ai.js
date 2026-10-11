@@ -154,6 +154,8 @@ function startAllAI() {
     chica.ailevel = 0
     foxyDoor.ailevel = 0
     foxyCloset.ailevel = 0
+    fredbear.ailevel = 0
+    nightmare.ailevel = 0
     if (customNightMode) {
         applyCustomNightLevels()
     } else {
@@ -171,6 +173,8 @@ function startAllAI() {
         foxyDoor.startAI()
         foxyCloset.startAI()
     }
+    if (isCharacterActive("fredbear")) fredbear.startAI()
+    if (isCharacterActive("nightmare")) nightmare.startAI()
     clearInterval(hourInterval)
     hourInterval = setInterval(addHour, 70000)
 }
@@ -267,4 +271,6 @@ function stopAllAI() {
     foxyCloset.stopAI()
     foxyCloset.currpos = -1000
     foxyDoor.stopAI()
+    fredbear.stopAI()
+    nightmare.stopAI()
 }
